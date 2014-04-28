@@ -8,7 +8,7 @@
   	<servlet-name>Start</servlet-name>
   	<display-name>Start</display-name>
   	<description></description>
-  	<servlet-class>com.team6.servlet.Admin</servlet-class>
+  	<servlet-class>com.team6.servlet.Start</servlet-class>
   </servlet>
   <servlet-mapping>
   	<servlet-name>Start</servlet-name>

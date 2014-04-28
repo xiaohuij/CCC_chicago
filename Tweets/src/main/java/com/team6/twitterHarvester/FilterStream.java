@@ -19,7 +19,6 @@ import com.twitter.hbc.core.processor.StringDelimitedProcessor;
 import com.twitter.hbc.httpclient.auth.Authentication;
 import com.twitter.hbc.httpclient.auth.OAuth1;
 
-import java.io.PrintWriter;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 
@@ -27,7 +26,8 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 
 import org.lightcouch.CouchDbClient;
-import org.lightcouch.CouchDbProperties;
+
+import com.team6.twitterHarvester.DbFactory;
 
 public class FilterStream {
 
@@ -36,19 +36,7 @@ public class FilterStream {
   }*/
   
   //couchDB connection driver - lightcouch
-  private static CouchDbClient dbClient; 
-  private static void couchDB_conn(){
-    CouchDbProperties properties = new CouchDbProperties()
-    .setDbName("tweet_chicago_1")
-    .setCreateDbIfNotExist(true)
-    .setProtocol("http")
-    .setHost("127.0.0.1")
-    .setPort(5984)
-    .setMaxConnections(100)
-    .setConnectionTimeout(0);
-
-    dbClient = new CouchDbClient(properties);
-  }	
+  private static CouchDbClient dbClient;
 	
   public static void oauth(String consumerKey, String consumerSecret, String token, String secret) throws InterruptedException {	  
 	//log(out, "Initializing...\n");
@@ -61,7 +49,6 @@ public class FilterStream {
     endpoint.locations(Lists.newArrayList(
             new Location(new Location.Coordinate(-87.96,41.644), new Location.Coordinate(-87.40,42.04))));
     
-
     Authentication auth = new OAuth1(consumerKey, consumerSecret, token, secret);
 
     // Create a new BasicClient. By default gzip is enabled.
@@ -77,8 +64,8 @@ public class FilterStream {
     client.connect();
 
     //log(out, "Connecting CouchDB...\n");
-    // Establish a database connection
-    couchDB_conn();
+    // Establish a database connection, return client as well
+    dbClient = DbFactory.getClient("tweet_chicago_1");
     
     //log(out, "Harvesting tweets...\n");
     // Do whatever needs to be done with messages
@@ -93,7 +80,6 @@ public class FilterStream {
       dbClient.save(jsonobj);
     }
 
-    //log(out, "Unconnecting...\n");
     dbClient.shutdown();
     
     client.stop();
