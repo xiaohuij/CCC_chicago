@@ -16,12 +16,12 @@
     #frm {font-size:25px;margin:30px 10px;}
   	#btnStart {font-size:20px;height:35px;width:100px;}
   </style>
-  <script type="text/javascript" src="/hbc_test/js/jquery-1.11.0.min.js"></script>
+  <script type="text/javascript" src="/Tweets/js/jquery-1.11.0.min.js"></script>
   <script type="text/javascript">
 	  $(document).ready(function() {
 		    $('#btnStart').click(function(event) {
 		    	$("#btnStart").val("RUNNING").attr("disabled", true);
-		        $.get('http://127.0.0.1:8080/hbc_test/start',{},function(data) {
+		        $.get('http://127.0.0.1:8080/Tweets/start',{},function(data) {
 		        	//alert(data);
 		        	$("#btnStart").val("START").removeAttr("disabled");
 		        });
