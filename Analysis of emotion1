@@ -1,0 +1,29 @@
+Map:
+function(doc) {
+var arrHappy = ["happy","excited",":)",":-)","lol"];
+var flag = false;
+var time;
+for(var i = 0;i < arrHappy.length;i++){
+if(doc.text.indexOf(arrHappy[i])!=-1){
+flag = true;
+time = doc.created_at.split(" ")[3];
+}
+}
+if(flag == true){
+var hour = time.split(":")[0];
+switch(true){
+case hour >6&&hour <12:
+emit("happy in the morning",doc.text);
+break;
+case hour >=12&&hour <18:
+emit("happy in the afternoon",doc.text);
+break;
+case hour >=18&&hour <24:
+emit("happy in the evening",doc.text);
+break;
+}
+}
+}
+
+Reduce:
+_count
