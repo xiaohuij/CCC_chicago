@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Tweets Analysis - Team6</title>
+<link rel="shortcut icon" href="http://www.unimelb.edu.au/favicon.ico" type="image/x-icon" />
+<link rel="stylesheet" href="css/metro-bootstrap.min.css">
+<link rel="stylesheet" href="css/metro-bootstrap-responsive.min.css">
+<link rel="stylesheet" href="css/style.css">
+<script type="text/javascript" src="./js/jquery-1.11.1.min.js"></script>
+<script type="text/javascript" src="./js/jsapi.js"></script>
+<script type="text/javascript" src="./js/team6.js"></script>
+
+<script type="text/javascript">
+Team6.initGC();
+
+$(function(){
+    Team6.sumPie = function(data, param){
+		if(typeof(data)=="object" && data.constructor==Object && data.rows){
+	      	//preprocess data
+	      	var arr = data.rows, dirty = 0, others = 0, i, ii = arr.length;
+			for(i=0; i<ii; i++){
+				if("0good"==arr[i].key){
+					others = arr[i].value;
+				} else {
+					dirty += arr[i].value;
+				}
+			}
+
+	      	//bar chart
+	        function drawChart() {
+				var dt = new google.visualization.DataTable();
+	      	    dt.addColumn('string', 'keyword');
+	          	dt.addColumn('number', 'number');
+	      	    dt.addRows([["Crime keyword",parseInt(dirty)]]);
+	      	    dt.addRows([["others",parseInt(others)]]);
+	      	    var options = {'title': param.title,
+	      	    				is3D: false,
+	      	    				//colors: ['#e0440e', '#e6693e', '#ec8f6e', '#f6c7b6', '#ffbfdf'],
+	      	                   'width':param.width||500,
+	      	                   'height':param.height||500,
+	      	                   slices: { 0: {offset: 0.4} }
+	      	                  };
+	      	    var chart = new google.visualization.PieChart(document.getElementById(param.container));
+	      	    chart.draw(dt, options);
+	      	}    
+	      	google.setOnLoadCallback(drawChart);
+	    }    	
+    };
+
+	var db_host_M = "http://115.146.93.80:5984";
+	var db_host_C = "http://115.146.93.11:5984";
+	var db_view_M = "/tweet_melbourne/_design/team6/_view/mel_crime?group=true&callback=?";
+	var db_view_C = "/tweet_chicago/_design/Ashton/_view/crime?group=true&callback=?";
+	var url_M = db_host_M + db_view_M;
+	var url_C = db_host_C + db_view_C;
+
+    //custom size
+  	var width = $(window).width(),
+  	    size = width/2-40;
+  	$("#mainDIV div").css({"width":size,"height":size,"line-height":size+"px"});
+
+	//melbourne Crimes
+	var par_M = { title:"Crime analysis in Melbourne", container:"chart_div1", width:size, height:size };
+	Team6.load(url_M, Team6.sumPie, par_M);
+    //chicago Crimes
+	var par_C = { title:"Crime analysis in Chicago", container:"chart_div2", width:size, height:size };
+	Team6.load(url_C, Team6.sumPie, par_C);
+
+})
+
+
+  </script>
+</head>
+<body class="metro">
+	<nav class="breadcrumbs">
+		<ul>
+			<li><a href="./index.html">Home</a></li>
+			<li><a href="#">Crime Ratio</a></li>
+		</ul>
+	</nav>
+	<div id="mainDIV" class="">
+		<div id="chart_div1" class="chart_bar">
+			<img src="images/progress.gif" alt="Loading..." class="progressbar" height="100" width="100">
+		</div>
+		<div id="chart_div2" class="chart_bar">
+			<img src="images/progress.gif" alt="Loading..." class="progressbar" height="100" width="100">
+		</div>
+		
+	</div>
+</body>
+</html>

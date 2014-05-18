@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Tweets Analysis - Team6</title>
+<link rel="shortcut icon" href="http://www.unimelb.edu.au/favicon.ico" type="image/x-icon" />
+<link rel="stylesheet" href="css/metro-bootstrap.min.css">
+<link rel="stylesheet" href="css/metro-bootstrap-responsive.min.css">
+<link rel="stylesheet" href="css/style.css">
+<script type="text/javascript" src="./js/jquery-1.11.1.min.js"></script>
+<script type="text/javascript" src="./js/jsapi.js"></script>
+
+<script type="text/javascript">
+var url_M="http://115.146.93.80:5984/tweet_melbourne/_design/emotion/_view/totalByHours?group=true&callback=?";
+var url_C="http://115.146.93.11:5984/tweet_chicago/_design/emotion/_view/totalByHours?group=true&callback=?";
+var total_M=new Array();
+$.ajax({
+      type: "get",
+      async: false,
+      url: url_M,
+      data: "",
+      contentType: "application/json",
+      dataType: "json",
+	  jsonp:"jsonpcallback",
+	  timeout:100000, 
+      cache: false,
+      success: function (data) {
+    	  var rows = data["rows"];
+    	  $.each(rows,function(i,field){
+    		  total_M.push(parseInt(field.value));
+    	  });
+      	},
+  		error: function(XMLHttpRequest, textStatus, errorThrown) {
+        alert(errorThrown);
+    	}
+	});
+var total_C=new Array();
+$.ajax({
+      type: "get",
+      async: false,
+      url: url_C,
+      data: "",
+      contentType: "application/json",
+      dataType: "json",
+	  jsonp:"jsonpcallback",
+	  timeout:100000, 
+      cache: false,
+      success: function (data) {
+    	  var rows = data["rows"];
+    	  $.each(rows,function(i,field){
+    		  total_C.push(parseInt(field.value));
+    	  });
+      	},
+  		error: function(XMLHttpRequest, textStatus, errorThrown) {
+        alert(errorThrown);
+    	}
+	});
+	
+  	google.load('visualization', '1.0', {'packages':['corechart']});
+///////////line chart//////////////
+	 var db_host_M = "http://115.146.93.80:5984";
+	 var db_host_C = "http://115.146.93.11:5984";
+	 var db_view_MPH = "/tweet_melbourne/_design/emotion/_view/pstByHours?limit=26&group=true&callback=?";
+	 var db_view_CPH = "/tweet_chicago/_design/emotion/_view/pstByHours?limit=26&group=true&callback=?";
+	 var db_view_MNH = "/tweet_melbourne/_design/emotion/_view/ngtByHours?limit=26&group=true&callback=?";
+	 var db_view_CNH = "/tweet_chicago/_design/emotion/_view/ngtByHours?limit=26&group=true&callback=?";
+	 var url_MPH = db_host_M + db_view_MPH;
+	 var url_CPH = db_host_C + db_view_CPH;
+	 var url_MNH = db_host_M + db_view_MNH;
+	 var url_CNH = db_host_C + db_view_CNH;
+	 var jsonMP,jsonCP,jsonMN,jsonCN;
+	 var sumCP=0,sumCN=0,sumMP=0,sumMN = 0;
+   	 var arrCP = new Array();
+   	 var arrMN = new Array();
+	 $.ajax({
+	      type: "get",
+	      async: false,
+	      url: url_MPH,
+	      data: "",
+	      contentType: "text/plain; charset=utf-8",
+	      dataType: "json",
+		  jsonp:"jsonpcallback",
+		  timeout:100000, 
+	      cache: false,
+	      success: function (data) {
+	    	  jsonMP=data;
+	    	  for(var i=0;i<data["rows"].length;i++){
+	    		  sumMP+=data["rows"][i].value;
+	    	  }
+	    	 
+	      	},
+			error: function(XMLHttpRequest, textStatus, errorThrown) {
+	        alert(errorThrown);
+	    	}
+		});
+	 $.ajax({
+	      type: "get",
+	      async: false,
+	      url: url_CPH,
+	      data: "",
+	      contentType: "text/plain; charset=utf-8",
+	      dataType: "json",
+		  jsonp:"jsonpcallback",
+		  timeout:100000, 
+	      cache: false,
+	      success: function (data) {
+	      	jsonCP= data;
+	        for(var j=0;j<jsonCP["rows"].length;j++){
+	     	   arrCP.push(jsonCP["rows"][j].value);
+	     	   sumCP+=jsonCP["rows"][j].value;
+	     	   
+	        }
+	      	},
+			error: function(XMLHttpRequest, textStatus, errorThrown) {
+	        alert(errorThrown);
+	    	}
+		});
+	 $.ajax({
+	      type: "get",
+	      async: false,
+	      url: url_MNH,
+	      data: "",
+	      contentType: "text/plain; charset=utf-8",
+	      dataType: "json",
+		  jsonp:"jsonpcallback",
+		  timeout:100000, 
+	      cache: false,
+	      success: function (data) {
+	    	  jsonMN=data;
+	    	  for(var j=0;j<jsonMN["rows"].length;j++){
+	        	   arrMN.push(jsonMN["rows"][j].value);
+	        	   sumMN+=jsonMN["rows"][j].value;
+	           }
+	      	},
+			error: function(XMLHttpRequest, textStatus, errorThrown) {
+	        alert(errorThrown);
+	    	}
+		});
+	 $.ajax({
+	      type: "get",
+	      async: false,
+	      url: url_CNH,
+	      data: "",
+	      contentType: "text/plain; charset=utf-8",
+	      dataType: "json",
+		  jsonp:"jsonpcallback",
+		  timeout:100000, 
+	      cache: false,
+	      success: function (data) {
+	      	jsonCN= data;
+	      	for(var i=0;i<data["rows"].length;i++){
+	    		  sumCN+=data["rows"][i].value;
+	    	  }
+	      	},
+			error: function(XMLHttpRequest, textStatus, errorThrown) {
+	        alert(errorThrown);
+	    	}
+		});
+	 
+   
+	 google.setOnLoadCallback(drawChart_P);
+     function drawChart_P() {
+       //var dt = google.visualization.arrayToDataTable([['Time', 'Melbourne', 'Chicago']]);
+       var dt = new google.visualization.DataTable();
+       dt.addColumn('string','Time');
+       dt.addColumn('number','Melbourne');
+       dt.addColumn('number','Chicago');
+       dt.addRows(jsonMP["rows"].length);
+       $.each(jsonMP["rows"], function(i, field1){
+    	   dt.setCell(i,0,field1.key+":00");
+    	   dt.setCell(i,1,parseInt(field1.value)/total_M[i]);
+    	   dt.setCell(i,2,parseInt(arrCP[i])/total_C[i]);
+    	   
+       });
+       var options = {
+         title: 'Comparison of positive sentiment between Melbourne and Chicago',
+         curveType: 'function',
+         legend: { position: 'bottom' },
+         vAxis: {format:'#.#%',gridlines:{count:5}}
+       };
+
+       var chart = new google.visualization.LineChart(document.getElementById('chart_div5'));
+       chart.draw(dt, options);
+     }
+     $("#chart_div5 img.progressbar").hide();
+     google.setOnLoadCallback(drawChart_N);
+     function drawChart_N() {
+       //var dt = google.visualization.arrayToDataTable([['Time', 'Melbourne', 'Chicago']]);
+       var dt = new google.visualization.DataTable();
+       dt.addColumn('string','Time');
+       dt.addColumn('number','Melbourne');
+       dt.addColumn('number','Chicago');
+       dt.addRows(jsonCN["rows"].length);
+       $.each(jsonCN["rows"], function(i, field1){
+    	   dt.setCell(i,0,field1.key+":00");
+    	   dt.setCell(i,1,parseInt(arrMN[i])/total_M[i]);
+    	   dt.setCell(i,2,parseInt(field1.value)/total_C[i]);
+    	   
+       });
+       var options = {
+         title: 'Comparison of negative sentiment between Melbourne and Chicago',
+         curveType: 'function',
+         legend: { position: 'bottom' },
+         vAxis: {format:'#.#%',gridlines:{count:5}}
+       };
+
+       var chart = new google.visualization.LineChart(document.getElementById('chart_div6'));
+       chart.draw(dt, options);
+     }
+     $("#chart_div6 img.progressbar").hide();
+  </script>
+</head>
+<body class="metro">
+	<nav class="breadcrumbs">
+		<ul>
+			<li><a href="./index.html">Home</a></li>
+			<li><a href="#">Sentiment By Hour</a></li>
+		</ul>
+	</nav>
+	<div id="mainDIV" class="">
+		<div id="chart_div5" class="chart_bar" style="width: 98%; height: 350px; float: left">
+			<img src="images/progress.gif" alt="Loading..." class="progressbar" height="100" width="100">
+		</div>
+		<div id="chart_div6" class="chart_bar" style="width: 98%; height: 350px; float: left"
+		<img src="images/progress.gif" alt="Loading..." class="progressbar" height="100" width="100"></div>
+	</div>
+</body>
+</html>

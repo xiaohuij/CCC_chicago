@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Tweets Analysis - Team6</title>
+<link rel="shortcut icon" href="http://www.unimelb.edu.au/favicon.ico" type="image/x-icon" />
+<link rel="stylesheet" href="css/metro-bootstrap.min.css">
+<link rel="stylesheet" href="css/metro-bootstrap-responsive.min.css">
+<link rel="stylesheet" href="css/style.css">
+<script type="text/javascript" src="./js/jquery-1.11.1.min.js"></script>
+<script type="text/javascript" src="./js/jsapi.js"></script>
+
+<script type="text/javascript">
+
+var db_host_M = "http://115.146.93.80:5984";
+var db_host_C = "http://115.146.93.11:5984";
+var db_view_MPL = "/tweet_melbourne/_design/emotion/_view/pstByLoc?limit=11&group=true&callback=?";
+var db_view_MNL = "/tweet_melbourne/_design/emotion/_view/ngtByLoc?limit=11&group=true&callback=?";
+var db_view_CPL = "/tweet_chicago/_design/emotion/_view/pstByLoc?limit=11&group=true&callback=?";
+var db_view_CNL = "/tweet_chicago/_design/emotion/_view/ngtByLoc?limit=11&group=true&callback=?";
+var url_MPL = db_host_M + db_view_MPL;
+var url_MNL = db_host_M + db_view_MNL;
+var url_CPL = db_host_C + db_view_CPL;
+var url_CNL = db_host_C + db_view_CNL;
+
+//var jsonCPL, jsonCNL;
+var arrCPL = new Array();
+var arrCNL = new Array();
+var arrMPL = new Array();
+var arrMNL = new Array();
+
+$.ajax({
+    type: "get",
+    async: false,
+    url: url_CPL,
+    data: "",
+    contentType: "text/plain; charset=utf-8",
+    dataType: "json",
+	  jsonp:"jsonpcallback",
+	  timeout:100000, 
+    cache: false,
+    success: function (data) {
+    	for(var i=0;i<data["rows"].length;i++){
+    		   arrCPL.push(data["rows"][i].value);
+    	}
+    	},
+		error: function(XMLHttpRequest, textStatus, errorThrown) {
+      alert(errorThrown);
+  	}
+	});
+$.ajax({
+    type: "get",
+    async: false,
+    url: url_CNL,
+    data: "",
+    contentType: "text/plain; charset=utf-8",
+    dataType: "json",
+	  jsonp:"jsonpcallback",
+	  timeout:100000, 
+    cache: false,
+    success: function (data) {
+    	for(var i=0;i<data["rows"].length;i++){
+    		   arrCNL.push(data["rows"][i].value);
+    	}
+    	},
+		error: function(XMLHttpRequest, textStatus, errorThrown) {
+      alert(errorThrown);
+  	}
+	});
+$.ajax({
+    type: "get",
+    async: false,
+    url: url_MPL,
+    data: "",
+    contentType: "text/plain; charset=utf-8",
+    dataType: "json",
+	  jsonp:"jsonpcallback",
+	  timeout:100000, 
+    cache: false,
+    success: function (data) {
+    	for(var i=0;i<data["rows"].length;i++){
+    		   arrMPL.push(data["rows"][i].value);
+    	}
+    	},
+		error: function(XMLHttpRequest, textStatus, errorThrown) {
+      alert(errorThrown);
+  	}
+	});
+$.ajax({
+    type: "get",
+    async: false,
+    url: url_MNL,
+    data: "",
+    contentType: "text/plain; charset=utf-8",
+    dataType: "json",
+	  jsonp:"jsonpcallback",
+	  timeout:100000, 
+    cache: false,
+    success: function (data) {
+    	for(var i=0;i<data["rows"].length;i++){
+    		   arrMNL.push(data["rows"][i].value);
+    	}
+    	},
+		error: function(XMLHttpRequest, textStatus, errorThrown) {
+      alert(errorThrown);
+  	}
+	});
+
+
+
+
+//var jsonData2;
+//positive in melbourne
+
+
+	  google.load("visualization", "1", {packages:["map,corechart"]});
+      google.setOnLoadCallback(drawMap_C);
+      function drawMap_C() {
+    	
+    		var data = google.visualization.arrayToDataTable([
+    		                                                  ['Lat', 'Long', 'Tweeters'],
+    		                                                  [41.9623, -87.758466, 'Happy:'+arrCPL[0]+' &Unhappy'+arrCNL[0]],
+    		                                                  [41.7667, -87.669, 'Happy:'+arrCPL[1]+' &Unhappy'+arrCNL[1]],
+    		                                                  [41.872, -87.7276, 'Happy:'+arrCPL[2]+' &Unhappy'+arrCNL[2]]
+    		                                                ]);
+
+        var map = new google.visualization.Map(document.getElementById('map_c'));
+        map.draw(data, {showTip: true});
+      }
+      google.setOnLoadCallback(drawChart_C);
+      function drawChart_C() {
+        var data = google.visualization.arrayToDataTable([
+          ['Location', 'Negative sentiment', 'Positive sentiment'],
+          ['North side', parseInt(arrCNL[0]),  parseInt(arrCPL[0])],
+          ['West side', parseInt(arrCNL[2]),  parseInt(arrCPL[2])],
+          ['South side', parseInt(arrCNL[1]),  parseInt(arrCPL[1])]
+        ]);
+
+        var options = {
+          title: 'Analysis of sentiment in different area of Chicago',
+          hAxis: {title: 'Location', titleTextStyle: {color: 'Black'}}
+        };
+
+        var chart = new google.visualization.ColumnChart(document.getElementById('chart_c'));
+        chart.draw(data, options);
+      }
+      google.setOnLoadCallback(drawMap_M);
+      function drawMap_M() {
+    	
+    		var data = google.visualization.arrayToDataTable([
+    		                                                  ['Lat', 'Long', 'Tweeters'],
+    		                                                  [-37.982,144.408, 'Southeast area:'+'Happy:'+arrMPL[2]+' &Unhappy'+arrMNL[2]],
+    		                                                  [-37.461, 144.919, 'Northwest area:'+'Happy:'+arrMPL[1]+' &Unhappy'+arrMNL[1]],
+    		                                                  [-38.053, 145.228, 'Southwest area:'+'Happy:'+arrMPL[3]+' &Unhappy'+arrMNL[3]],
+    		                                                  [-37.461, 145.574, 'Northeast area:'+'Happy:'+arrMPL[0]+' &Unhappy'+arrMNL[0]],
+    		                                                ]);
+
+        var map = new google.visualization.Map(document.getElementById('map_m'));
+        map.draw(data, {showTip: true});
+      }
+      google.setOnLoadCallback(drawChart_M);
+      function drawChart_M() {
+        var data = google.visualization.arrayToDataTable([
+          ['Location', 'Negative sentiment', 'Positive sentiment'],
+          ['Northeast area', parseInt(arrMNL[0]),  parseInt(arrMPL[0])],
+          ['Northwest area', parseInt(arrMNL[1]),  parseInt(arrMPL[1])],
+          ['Southeast area', parseInt(arrMNL[2]),  parseInt(arrMPL[2])],
+          ['Southwest area', parseInt(arrMNL[3]),  parseInt(arrMPL[3])]
+        ]);
+
+        var options = {
+          title: 'Analysis of sentiment in different area of Melbourne',
+          hAxis: {title: 'Location', titleTextStyle: {color: 'Black'}}
+        };
+
+        var chart = new google.visualization.ColumnChart(document.getElementById('chart_m'));
+        chart.draw(data, options);
+      }
+  </script>
+</head>
+<body class="metro">
+  <nav class="breadcrumbs">
+    <ul>
+      <li><a href="./index.html">Home</a></li>
+      <li><a href="#">Sentiment By Location</a></li>
+    </ul>
+  </nav>
+	<div id="mainDIV_1" class="">
+		<div id="map_c" style="width: 55%; height: 500px; float: left"></div>
+		<div id="chart_c" style="width: 44%; height: 500px; float: left"></div>
+	</div>
+	<div id="mainDIV_3" style="width: 100%; height: 50px; float: left"></div>
+	<div id="mainDIV_2" class="">
+		<div id="map_m" style="width: 55%; height: 500px; float: left"></div>
+		<div id="chart_m" style="width: 44%; height: 500px; float: left"></div>
+	</div>
+</body>
+</html>

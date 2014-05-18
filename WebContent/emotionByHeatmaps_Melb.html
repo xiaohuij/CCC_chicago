@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Tweets Analysis - Team6</title>
+<link rel="shortcut icon" href="http://www.unimelb.edu.au/favicon.ico" type="image/x-icon" />
+ <style>
+      html, body, #map_p, #map_n {
+        margin: 0px;
+        padding: 0px;
+       
+      }
+       #map_p, #map_n {
+       width:100%;
+       	height:500px;
+       	text-align:center;
+        }
+    </style>
+<script type="text/javascript" src="./js/jquery-1.11.1.min.js"></script>
+<script src="https://maps.googleapis.com/maps/api/js?v=3.exp&sensor=false&libraries=visualization"></script>
+
+<script type="text/javascript">
+
+var url_M = "http://115.146.93.80:5984/tweet_melbourne/_design/emotion/_view/heatmaps?reduce=false&callback=?";
+//var url_C = "http://115.146.93.11:5984/tweet_chicago/_design/emotion/_view/heatmaps?reduce=false&callback=?"
+var map, pointarray, heatmap;
+var heatData_PM = new Array();
+var heatData_NM = new Array();
+var lat_PM = 0.0,lng_PM=0.0;
+var lat_NM = 0.0,lng_NM=0.0;
+$.ajax({
+    type: "get",
+    async: false,
+    url: url_M,
+    data: "",
+    contentType: "text/plain; charset=utf-8",
+    dataType: "json",
+	  jsonp:"jsonpcallback",
+	  timeout:100000, 
+    cache: false,
+    success: function (data) {
+    	var rows = data["rows"];
+
+    	$.each(rows, function(i, field){
+    		if(field.key=="happy"){
+    		heatData_PM.push(new google.maps.LatLng(parseFloat(field.value[0]),parseFloat(field.value[1])));
+    		lat_PM=parseFloat(field.value[0])+lat_PM;
+    		lng_PM=parseFloat(field.value[1])+lng_PM;
+    		}else{
+    		heatData_NM.push(new google.maps.LatLng(parseFloat(field.value[0]),parseFloat(field.value[1])));
+        	lat_NM=parseFloat(field.value[0])+lat_NM;
+        	lng_NM=parseFloat(field.value[1])+lng_NM;
+    		}
+    	});
+    	},
+		error: function(XMLHttpRequest, textStatus, errorThrown) {
+      	alert(errorThrown);}
+	});
+
+function initialize_P() {
+	  var mapOptions = {
+	    zoom: 11,
+	    center: new google.maps.LatLng(parseFloat(lat_PM/heatData_PM.length),parseFloat(lng_PM/heatData_PM.length))
+	  };
+
+	  map = new google.maps.Map(document.getElementById('map_p'),
+	      mapOptions);
+	  var pointArray = new google.maps.MVCArray(heatData_PM);
+
+	  heatmap = new google.maps.visualization.HeatmapLayer({
+	    data: pointArray,
+	    radius:25,
+	    opacity:1
+	    
+	  });
+
+	  heatmap.setMap(map);
+	  $("#map_p img.progressbar").hide();
+	}
+function initialize_N() {
+
+	  var mapOptions = {
+	    zoom: 11,
+	    center: new google.maps.LatLng(parseFloat(lat_NM/heatData_NM.length),parseFloat(lng_NM/heatData_NM.length))
+	  };
+
+	  map = new google.maps.Map(document.getElementById('map_n'),
+	      mapOptions);
+	  var pointArray = new google.maps.MVCArray(heatData_NM);
+
+	  heatmap = new google.maps.visualization.HeatmapLayer({
+	    data: pointArray,
+	    radius:25,
+	    opacity:0.9,
+	    gradient : ['rgba(0, 255, 255, 0)',
+	    'rgba(0, 255, 255, 1)',
+	    'rgba(0, 191, 255, 1)',
+	    'rgba(0, 127, 255, 1)',
+	    'rgba(0, 63, 255, 1)',
+	    'rgba(0, 0, 255, 1)',
+	    'rgba(0, 0, 223, 1)',
+	    'rgba(0, 0, 191, 1)',
+	    'rgba(0, 0, 159, 1)',
+	    'rgba(0, 0, 127, 1)',
+	    'rgba(63, 0, 91, 1)',
+	    'rgba(127, 0, 63, 1)',
+	    'rgba(191, 0, 31, 1)',
+	    'rgba(255, 0, 0, 1)']
+	  });
+
+	  heatmap.setMap(map);
+	  $("#map_n img.progressbar").hide();
+	}
+
+	google.maps.event.addDomListener(window, 'load', initialize_P);
+	google.maps.event.addDomListener(window, 'load', initialize_N);
+  </script>
+</head>
+<body>
+	
+		<div id="map_p">
+			<img src="images/progress.gif" alt="Loading..." style="margin-top:200px;" class="progressbar" height="100" width="100">
+		</div>
+		<div style="width:100%; height:20px; float:left">
+			
+		</div>
+		<div id="map_n">
+			<img src="images/progress.gif" alt="Loading..." style="margin-top:200px;" class="progressbar" height="100" width="100">
+		</div>
+
+	
+</body>
+</html>

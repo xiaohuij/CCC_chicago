@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Tweets Analysis - Team6</title>
+<link rel="shortcut icon" href="http://www.unimelb.edu.au/favicon.ico" type="image/x-icon" />
+<link rel="stylesheet" href="css/metro-bootstrap.min.css">
+<link rel="stylesheet" href="css/metro-bootstrap-responsive.min.css">
+<link rel="stylesheet" href="css/style.css">
+<script type="text/javascript" src="./js/jquery-1.11.1.min.js"></script>
+<script type="text/javascript" src="./js/jsapi.js"></script>
+
+<script type="text/javascript">
+var url_M="http://115.146.93.80:5984/tweet_melbourne?callback=?";
+var url_C="http://115.146.93.11:5984/tweet_chicago?callback=?";
+var total_M=0;
+$.ajax({
+      type: "get",
+      async: false,
+      url: url_M,
+      data: "",
+      contentType: "application/json",
+      dataType: "json",
+	  jsonp:"jsonpcallback",
+	  timeout:100000, 
+      cache: false,
+      success: function (data) {
+    	 total_M=data.doc_count;
+      	},
+  		error: function(XMLHttpRequest, textStatus, errorThrown) {
+        alert(errorThrown);
+    	}
+	});
+var total_C=0;
+$.ajax({
+      type: "get",
+      async: false,
+      url: url_C,
+      data: "",
+      contentType: "application/json",
+      dataType: "json",
+	  jsonp:"jsonpcallback",
+	  timeout:100000, 
+      cache: false,
+      success: function (data) {
+    	 total_C=data.doc_count;
+      	},
+  		error: function(XMLHttpRequest, textStatus, errorThrown) {
+        alert(errorThrown);
+    	}
+	});
+	
+  	google.load('visualization', '1.0', {'packages':['corechart']});
+///////////line chart//////////////
+	 var db_host_M = "http://115.146.93.80:5984";
+	 var db_host_C = "http://115.146.93.11:5984";
+	 var db_view_Msport = "/tweet_melbourne/_design/sport/_view/sportBytime?limit=26&group=true&callback=?";
+	 var db_view_Csport = "/tweet_chicago/_design/sport/_view/sportBytime?limit=26&group=true&callback=?";
+	 var url_Msport = db_host_M + db_view_Msport;
+	 var url_Csport = db_host_C + db_view_Csport;
+	 //var url_MNH = db_host_M + db_view_MNH;
+	// var url_CNH = db_host_C + db_view_CNH;
+	 var jsonM,jsonC;
+	// var sumCP=0,sumCN=0,sumMP=0,sumMN = 0;
+   	 var arrC = new Array();
+   	 var arrM = new Array();
+	 $.ajax({
+	      type: "get",
+	      async: false,
+	      url: url_Msport,
+	      data: "",
+	      contentType: "text/plain; charset=utf-8",
+	      dataType: "json",
+		  jsonp:"jsonpcallback",
+		  timeout:100000, 
+	      cache: false,
+		  success: function (data) {
+	     	  jsonM=data;
+	      	},
+			error: function(XMLHttpRequest, textStatus, errorThrown) {
+	        alert(errorThrown);
+	    	}
+		});
+		
+		 $.ajax({
+	      type: "get",
+	      async: false,
+	      url: url_Csport,
+	      data: "",
+	      contentType: "text/plain; charset=utf-8",
+	      dataType: "json",
+		  jsonp:"jsonpcallback",
+		  timeout:100000, 
+	      cache: false,
+		  success: function (data) {
+	     	  jsonC=data;
+	    	  for(var j=0;j<jsonC["rows"].length;j++){
+	        	   arrC.push(jsonC["rows"][j].value);
+	        	   //sumMN+=jsonMN["rows"][j].value;
+	           }
+	      	},
+			error: function(XMLHttpRequest, textStatus, errorThrown) {
+	        alert(errorThrown);
+	    	}
+		});
+		
+		google.setOnLoadCallback(drawChart);
+		function drawChart() {
+			var dt = new google.visualization.DataTable();
+			dt.addColumn('string', 'time');
+			dt.addColumn('number', 'Melbourne');
+			dt.addColumn('number', 'Chicago');
+			dt.addRows(jsonM["rows"].length);
+		
+			$.each(jsonM["rows"], function(i, sport){
+				dt.setCell(i,0,sport.key);
+				dt.setCell(i,1,parseInt(sport.value)/total_M);
+				dt.setCell(i,2,parseInt(arrC[i])/total_C);
+			});
+		var options = {
+			title: 'Comparison of sport time in Melbourne and Chicago',
+			curveType: 'function',
+			legend: { position: 'bottom' },
+			vAxis: {format:'#.#%',gridlines:{count:5}},
+			hAxis: {textStyle:{fontSize:12}},
+			
+			};
+	    var chart = new google.visualization.LineChart(document.getElementById('chart_div1'));
+	    	chart.draw(dt, options);
+		}
+		$("img.progressbar").hide();
+	
+  </script>
+</head>
+<body class="metro">
+	<nav class="breadcrumbs">
+		<ul>
+			<li><a href="./index.html">Home</a></li>
+			<li><a href="#">Sports popularity by Time</a></li>
+		</ul>
+	</nav>
+	<div id="mainDIV" class="">
+		<div id="chart_div1" class="chart_bar" style="width: 98%; height: 350px; line-height: 350px;">
+			<img src="images/progress.gif" alt="Loading..." class="progressbar" height="100" width="100">
+		</div>
+	</div>
+</body>
+</html>

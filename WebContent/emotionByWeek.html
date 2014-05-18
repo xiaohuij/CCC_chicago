@@ -1,0 +1,284 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Tweets Analysis - Team6</title>
+<link rel="shortcut icon" href="http://www.unimelb.edu.au/favicon.ico" type="image/x-icon" />
+<link rel="stylesheet" href="css/metro-bootstrap.min.css">
+<link rel="stylesheet" href="css/metro-bootstrap-responsive.min.css">
+<link rel="stylesheet" href="css/style.css">
+<script type="text/javascript" src="./js/jquery-1.11.1.min.js"></script>
+<script type="text/javascript" src="./js/jsapi.js"></script>
+
+<script type="text/javascript">
+	var url_M="http://115.146.93.80:5984/tweet_melbourne/_design/emotion/_view/totalByWeek?group=true&callback=?";
+	var url_C="http://115.146.93.11:5984/tweet_chicago/_design/emotion/_view/totalByWeek?group=true&callback=?";
+	var total_M=new Array();
+	$.ajax({
+	      type: "get",
+	      async: false,
+	      url: url_M,
+	      data: "",
+	      contentType: "application/json",
+	      dataType: "json",
+		  jsonp:"jsonpcallback",
+		  timeout:100000, 
+	      cache: false,
+	      success: function (data) {
+	    	  var rows = data["rows"];
+	    	  $.each(rows,function(i,field){
+	    		  total_M.push(parseInt(field.value));
+	    	  });
+	    	 
+	      	},
+	  		error: function(XMLHttpRequest, textStatus, errorThrown) {
+	        alert(errorThrown);
+	    	}
+		});
+	var total_C=new Array();
+	$.ajax({
+	      type: "get",
+	      async: false,
+	      url: url_C,
+	      data: "",
+	      contentType: "application/json",
+	      dataType: "json",
+		  jsonp:"jsonpcallback",
+		  timeout:100000, 
+	      cache: false,
+	      success: function (data) {
+	    	  var rows = data["rows"];
+	    	  $.each(rows,function(i,field){
+	    		  total_C.push(field.value);
+	    	  });
+	      	},
+	  		error: function(XMLHttpRequest, textStatus, errorThrown) {
+	        alert(errorThrown);
+	    	}
+		});
+	
+  	google.load('visualization', '1.0', {'packages':['corechart']});
+	var db_host_M = "http://115.146.93.80:5984";
+	var db_host_C = "http://115.146.93.11:5984";
+
+///////////line chart//////////////
+	 var db_view_MPW = "/tweet_melbourne/_design/emotion/_view/pstByWeek?limit=11&group=true&callback=?";
+	 var db_view_CPW = "/tweet_chicago/_design/emotion/_view/pstByWeek?limit=11&group=true&callback=?";
+	 var db_view_MNW = "/tweet_melbourne/_design/emotion/_view/ngtByWeek?limit=11&group=true&callback=?";
+	 var db_view_CNW = "/tweet_chicago/_design/emotion/_view/ngtByWeek?limit=11&group=true&callback=?";
+	 var url_MPW = db_host_M + db_view_MPW;
+	 var url_CPW = db_host_C + db_view_CPW;
+	 var url_MNW = db_host_M + db_view_MNW;
+	 var url_CNW = db_host_C + db_view_CNW;
+	 var jsonMPW,jsonCPW,jsonMNW,jsonCNW;
+	 var sumCP=0,sumCN=0,sumMP=0,sumMN = 0;
+	 var arrCPW = new Array();
+	 var arrMPW = new Array();
+	 var arrCNW = new Array();
+	 var arrMNW = new Array();
+	 
+	 $.ajax({
+		    type: "get",
+		    async: false,
+		    url: url_MPW,
+		    data: "",
+		    contentType: "text/plain; charset=utf-8",
+		    dataType: "json",
+			  jsonp:"jsonpcallback",
+			  timeout:100000, 
+		    cache: false,
+		    success: function (data) {
+		    	jsonMPW=data;
+		    	for(var i=0;i<data["rows"].length;i++){
+		    		arrMPW.push(data["rows"][i].value);
+		    		sumMP+=data["rows"][i].value;
+		    	}
+		    	},
+				error: function(XMLHttpRequest, textStatus, errorThrown) {
+		      alert(errorThrown);
+		  	}
+			});
+		$.ajax({
+		    type: "get",
+		    async: false,
+		    url: url_CPW,
+		    data: "",
+		    contentType: "text/plain; charset=utf-8",
+		    dataType: "json",
+			  jsonp:"jsonpcallback",
+			  timeout:100000, 
+		    cache: false,
+		    success: function (data) {
+		    	jsonCPW=data;
+		    	for(var i=0;i<data["rows"].length;i++){
+		    		   arrCPW.push(data["rows"][i].value);
+		    		   sumCP+=data["rows"][i].value;
+		    	}
+		    	},
+				error: function(XMLHttpRequest, textStatus, errorThrown) {
+		      alert(errorThrown);
+		  	}
+			});
+		$.ajax({
+		    type: "get",
+		    async: false,
+		    url: url_MNW,
+		    data: "",
+		    contentType: "text/plain; charset=utf-8",
+		    dataType: "json",
+			  jsonp:"jsonpcallback",
+			  timeout:100000, 
+		    cache: false,
+		    success: function (data) {
+		    	jsonMNW=data;
+		    	for(var i=0;i<data["rows"].length;i++){
+		    		   arrMNW.push(data["rows"][i].value);
+		    		   sumMN+=data["rows"][i].value;
+		    	}
+		    	},
+				error: function(XMLHttpRequest, textStatus, errorThrown) {
+		      alert(errorThrown);
+		  	}
+			});
+		$.ajax({
+		    type: "get",
+		    async: false,
+		    url: url_CNW,
+		    data: "",
+		    contentType: "text/plain; charset=utf-8",
+		    dataType: "json",
+			  jsonp:"jsonpcallback",
+			  timeout:100000, 
+		    cache: false,
+		    success: function (data) {
+		    	jsonCNW=data;
+		    	for(var i=0;i<data["rows"].length;i++){
+		    		   arrCNW.push(data["rows"][i].value);
+		    		   sumCN+=data["rows"][i].value;
+		    	}
+		    	},
+				error: function(XMLHttpRequest, textStatus, errorThrown) {
+		      alert(errorThrown);
+		  	}
+			});
+	
+	 google.setOnLoadCallback(drawChart_P);
+     function drawChart_P() {
+    	
+       //var dt = google.visualization.arrayToDataTable([['Time', 'Melbourne', 'Chicago']]);
+       var dt = new google.visualization.DataTable();
+       dt.addColumn('string','Weekday');
+       dt.addColumn('number','Melbourne');
+       dt.addColumn('number','Chicago');
+   
+       dt.addRows(jsonCPW["rows"].length);
+       $.each(jsonMPW["rows"], function(i, field1){
+    	   switch(field1.key){
+    	   case 1:
+    		   dt.setCell(i,0,"Monday");
+    	   break;
+    	   case 2:
+    		   dt.setCell(i,0,"Tuesday");
+    	   break;
+    	   case 3:
+    		   dt.setCell(i,0,"Wednesday");
+    	   break;
+    	   case 4:
+    		   dt.setCell(i,0,"Thursday");
+    	   break;
+    	   case 5:
+    		   dt.setCell(i,0,"Friday");
+    	   break;
+    	   case 6:
+    		   dt.setCell(i,0,"Saturday");
+    	   break;
+    	   case 0:
+    		   dt.setCell(i,0,"Sunday");
+    	   break;
+    	   }
+    	   dt.setCell(i,1,parseInt(field1.value)/total_M[i]);
+    	   dt.setCell(i,2,parseInt(arrCPW[i])/total_C[i]);
+    	   
+       });
+       var options = {
+         title: 'Comparison of positive sentiment between Melbourne and Chicago',
+         curveType: 'function',
+         legend: { position: 'bottom' },
+         vAxis: {format:'#.#%',gridlines:{count:5}}
+       };
+
+       var chart = new google.visualization.LineChart(document.getElementById('chart_div1'));
+       chart.draw(dt, options);
+     }
+     $("#chart_div6 img.progressbar").hide();
+
+     google.setOnLoadCallback(drawChart_N);
+     function drawChart_N() {
+       //var dt = google.visualization.arrayToDataTable([['Time', 'Melbourne', 'Chicago']]);
+       var dt = new google.visualization.DataTable();
+       dt.addColumn('string','Weekday');
+       dt.addColumn('number','Melbourne');
+       dt.addColumn('number','Chicago');
+       
+     
+       dt.addRows(jsonCNW["rows"].length);
+       $.each(jsonMNW["rows"], function(i, field1){
+    	   switch(field1.key){
+    	   case 1:
+    		   dt.setCell(i,0,"Monday");
+    	   break;
+    	   case 2:
+    		   dt.setCell(i,0,"Tuesday");
+    	   break;
+    	   case 3:
+    		   dt.setCell(i,0,"Wednesday");
+    	   break;
+    	   case 4:
+    		   dt.setCell(i,0,"Thursday");
+    	   break;
+    	   case 5:
+    		   dt.setCell(i,0,"Friday");
+    	   break;
+    	   case 6:
+    		   dt.setCell(i,0,"Saturday");
+    	   break;
+    	   case 0:
+    		   dt.setCell(i,0,"Sunday");
+    	   break;
+    	   }
+    	  
+    	   dt.setCell(i,1,parseInt(field1.value)/total_M[i]);
+    	   dt.setCell(i,2,parseInt(arrCNW[i])/total_C[i]);
+    	   
+       });
+       var options = {
+         title: 'Comparison of negative sentiment between Melbourne and Chicago',
+         curveType: 'function',
+         legend: { position: 'bottom' },
+         vAxis: {format:'#.#%',gridlines:{count:6}}
+       };
+
+       var chart = new google.visualization.LineChart(document.getElementById('chart_div2'));
+       chart.draw(dt, options);
+     }
+     $("#chart_div2 img.progressbar").hide();
+  </script>
+</head>
+<body class="metro">
+	<nav class="breadcrumbs">
+		<ul>
+			<li><a href="./index.html">Home</a></li>
+			<li><a href="#">Sentiment By Week</a></li>
+		</ul>
+	</nav>
+	<div id="mainDIV" class="">
+		
+		<div id="chart_div1" class="chart_bar" style="width: 98%; height: 350px; float: left">
+			<img src="images/progress.gif" alt="Loading..." class="progressbar" height="100" width="100">
+		</div>
+		<div id="chart_div2" class="chart_bar" style="width: 98%; height: 350px; float: left">
+			<img src="images/progress.gif" alt="Loading..." class="progressbar" height="100" width="100">
+		</div>
+	</div>
+</body>
+</html>

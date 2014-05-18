@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Tweets Analysis - Team6</title>
+<link rel="shortcut icon" href="http://www.unimelb.edu.au/favicon.ico" type="image/x-icon" />
+<link rel="stylesheet" href="css/metro-bootstrap.min.css">
+<link rel="stylesheet" href="css/metro-bootstrap-responsive.min.css">
+<link rel="stylesheet" href="css/style.css">
+<script type="text/javascript" src="./js/jquery-1.11.1.min.js"></script>
+<script type="text/javascript" src="./js/jsapi.js"></script>
+
+<script type="text/javascript">
+
+var url_M = "http://115.146.93.80:5984/tweet_melbourne/_design/cultures/_view/coffee?limit=11&group=true&callback=?";
+var url_C = "http://115.146.93.11:5984/tweet_chicago/_design/cultrues/_view/coffee?group=true&callback=?";
+
+//var jsonCPL, jsonCNL;
+var arrC = new Array();
+var arrM = new Array();
+var total_M=0,total_C=0;
+
+$.ajax({
+    type: "get",
+    async: false,
+    url: url_M,
+    data: "",
+    contentType: "text/plain; charset=utf-8",
+    dataType: "json",
+	  jsonp:"jsonpcallback",
+	  timeout:100000, 
+    cache: false,
+    success: function (data) {
+    	for(var i=0;i<data["rows"].length;i++){
+    		total_M = total_M + data["rows"][i].value;
+    		switch(data["rows"][i].key){
+    		case "cappuccino":
+    			arrM.push(data["rows"][i].value);
+    			break;
+    		case "espresso":
+    			arrM.push(data["rows"][i].value);
+    			break;
+    		case "iced coffee":
+    			arrM.push(data["rows"][i].value);
+    			break;
+    		case "latte":
+    			arrM.push(data["rows"][i].value);
+    			break;
+    		case "macchiato":
+    			arrM.push(data["rows"][i].value);
+    			break;
+    		case "mocha":
+    			arrM.push(data["rows"][i].value);
+    			break;
+    		}
+    	}
+    	},
+		error: function(XMLHttpRequest, textStatus, errorThrown) {
+      alert(errorThrown);
+  	}
+	});
+$.ajax({
+    type: "get",
+    async: false,
+    url: url_C,
+    data: "",
+    contentType: "text/plain; charset=utf-8",
+    dataType: "json",
+	  jsonp:"jsonpcallback",
+	  timeout:100000, 
+    cache: false,
+    success: function (data) {
+    	for(var i=0;i<data["rows"].length;i++){
+    		total_C = total_C + data["rows"][i].value;
+    		
+    		switch(data["rows"][i].key.toString()){
+    		case "cappuccino":
+    			arrC.push(data["rows"][i].value);
+    			break;
+    		case "espresso":
+    			arrC.push(data["rows"][i].value);
+    			break;
+    		case "iced coffee":
+    			arrC.push(data["rows"][i].value);
+    			break;
+    		case "latte":
+    			arrC.push(data["rows"][i].value);
+    			break;
+    		case "macchiato":
+    			arrC.push(data["rows"][i].value);
+    			break;
+    		case "mocha":
+    			arrC.push(data["rows"][i].value);
+    			break;
+    		}
+    	}
+    	},
+		error: function(XMLHttpRequest, textStatus, errorThrown) {
+      alert(errorThrown);
+  	}
+	});
+
+
+
+
+//var jsonData2;
+//positive in melbourne
+
+
+	  google.load("visualization", "1", {packages:["corechart"]});
+      google.setOnLoadCallback(drawChart_bar);
+      function drawChart_bar() {
+        var data = google.visualization.arrayToDataTable([
+          ['Coffee', 'Melbourne', 'Chicago'],
+          ['Cappuccino', parseInt(arrM[0])/total_M,  parseInt(arrC[0])/total_C],
+          ['Espresso',parseInt(arrM[1])/total_M, parseInt(arrC[1])/total_C],
+          ['Iced coffee', parseInt(arrM[2])/total_M,  parseInt(arrC[2])/total_C],
+          ['Latte', parseInt(arrM[3])/total_M, parseInt(arrC[3])/total_C],
+          ['Macchiato', parseInt(arrM[4])/total_M,  parseInt(arrC[4])/total_C],
+          ['Mocha', parseInt(arrM[5])/total_M,  parseInt(arrC[5])/total_C],
+        ]);
+
+        var options = {
+          title: 'Comparision of coffee preference between Melbourne and Chicagos',
+          hAxis: {title: 'Coffee', titleTextStyle: {color: 'Black'}},
+        vAxis: {format:'#.#%',gridlines:{count:8}},
+        legend: { position: 'bottom' }
+        };
+
+        var chart = new google.visualization.ColumnChart(document.getElementById('chart_1'));
+        chart.draw(data, options);
+      }
+      $("#chart_1 img.progressbar").hide();
+  </script>
+</head>
+<body class="metro">
+    <nav class="breadcrumbs">
+        <ul>
+            <li><a href="./index.html">Home</a></li>
+            <li><a href="#">Coffee Type</a></li>
+        </ul>
+    </nav>
+	<div id="mainDIV_1" class="">
+		<div id="chart_1" style="width: 80%; height: 500px; line-height:500px; text-align:center; float: left">
+            <img src="images/progress.gif" alt="Loading..." class="progressbar" height="100" width="100"> 
+        </div>
+	</div>
+	
+</body>
+</html>

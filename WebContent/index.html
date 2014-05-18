@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Team6</title>
+<link rel="shortcut icon" href="http://www.unimelb.edu.au/favicon.ico" type="image/x-icon" /> 
+<link rel="stylesheet" href="css/metro-bootstrap.min.css">
+<link rel="stylesheet" href="css/metro-bootstrap-responsive.min.css">
+<link rel="stylesheet" href="css/style.css">
+<script type="text/javascript" src="http://code.jquery.com/jquery-latest.js"></script>
+<script type="text/javascript" src="js/jquery.isotope.js"></script>
+<script type="text/javascript" src="js/metro.min.js"></script>
+
+</head>
+<body class="metro">
+
+<h1>Global City Twittering - Team6</h1>
+
+<div class="wrapper">
+    <div class="portfolioFilter">
+    
+        <a href="#" data-filter="*" class="button large fg-white bg-cyan">All Categories</a>
+        <a href="#" data-filter=".bg-violet" class="button large fg-white bg-violet">Bar</a>
+        <a href="#" data-filter=".bg-darkBrown" class="button large fg-white bg-darkBrown">Coffee</a>
+        <a href="#" data-filter=".bg-dark" class="button large fg-white bg-dark">Crime</a>
+        <a href="#" data-filter=".bg-darkBlue" class="button large fg-white bg-darkBlue"> IT </a>         
+        <a href="#" data-filter=".bg-orange" class="button large fg-white bg-orange">Sentiment</a>
+        <a href="#" data-filter=".bg-red" class="button large fg-white bg-red">Sports</a>                
+        <a href="#" data-filter=".bg-green" class="button large fg-white bg-green">Swear word</a>
+        <a href="#" data-filter=".bg-teal" class="button large fg-white bg-teal">work</a>
+
+    </div>
+    
+    <div class="portfolioContainer">
+        <div class="tile fg-white bg-violet" fly="./barTimeSection.html">Bar time</div>
+
+        <div class="tile fg-white bg-violet" fly="./barBylocM.html">HeatMap-Mel</div>
+
+        <div class="tile fg-white bg-violet" fly="./barBylocC.html">HeatMap-Chi</div> 
+
+        <div class="tile fg-white bg-violet" fly="./barBydays.html">By day</div>
+
+        <div class="tile fg-white bg-violet" fly="./barByTime.html">By time</div>
+
+        <div class="tile fg-white bg-darkBrown" fly="./coffee.html">Coffee</div>
+
+        <div class="tile fg-white bg-dark" fly="./crimesum.html">Ratio</div>
+
+        <div class="tile fg-white bg-dark" fly="./crimerank.html">Top 10</div>
+
+        <div class="tile fg-white bg-dark" fly="./crimemix.html">Comparision</div>
+
+        <div class="tile fg-white bg-dark" fly="./crimecolumn.html">List</div>
+
+        <div class="tile fg-white bg-dark" fly="./crimeheatmapchi.html">HeatMap-Chi</div>
+
+        <div class="tile fg-white bg-dark" fly="./crimeheatmapmel.html">HeatMap-Mel</div>
+
+        <div class="tile fg-white bg-darkBlue" fly="./ITlocinChic.html">HeatMap-Chi</div>
+
+        <div class="tile fg-white bg-darkBlue" fly="./ITlocinMelb.html">HeatMap-Mel</div>
+
+        <div class="tile fg-white bg-darkBlue" fly="./ITpercent.html">Rank</div>
+
+        <div class="tile fg-white bg-orange" fly="./emotionByLoc.html">Location</div>
+    
+        <div class="tile fg-white bg-orange" fly="./emotionByTime.html">By Time</div>   
+        
+        <div class="tile fg-white bg-orange" fly="./emotionByWeek.html">By Week</div>
+
+        <div class="tile fg-white bg-orange" fly="./emotionByHours.html">By Hour</div>
+    
+        <div class="tile fg-white bg-orange" fly="./emotionByHeatmaps_Melb.html">HeatMap-Mel</div>
+
+        <div class="tile fg-white bg-orange" fly="./emotionByHeatmaps_Chicg.html">HeatMap-Chi</div>
+
+        <div class="tile fg-white bg-red" fly="./sportbytime.html">By Time</div>
+
+        <div class="tile fg-white bg-red" fly="./sportbyweek.html">By week</div>
+
+        <div class="tile fg-white bg-red" fly="./sportsort.html">Ratio</div>        
+
+        <div class="tile fg-white bg-green" fly="./swsum.html">Ratio</div>
+
+        <div class="tile fg-white bg-green" fly="./swrank.html">Top 10</div>
+
+        <div class="tile fg-white bg-green" fly="./swmix.html">Comparision</div>
+
+        <div class="tile fg-white bg-green" fly="./swcolumn.html">List</div>
+
+        <div class="tile fg-white bg-green" fly="./swheatmapchi.html">HeatMap-Chi</div>
+
+        <div class="tile fg-white bg-green" fly="./swheatmapmel.html">HeatMap-Mel</div>
+
+        <div class="tile fg-white bg-teal" fly="./workbytime.html">Work time</div>
+
+        <div class="tile fg-white bg-teal" fly="./worklocinChic.html">HeatMap-Chi</div>
+
+        <div class="tile fg-white bg-teal" fly="./worklocinMelb.html">HeatMap-Mel</div>
+
+    </div>
+</div>
+ 
+<script type="text/javascript">
+
+$(window).load(function(){
+    var $container = $('.portfolioContainer');
+    $container.isotope({
+        filter: '*',
+        animationOptions: {
+            duration: 750,
+            easing: 'linear',
+            queue: false
+        }
+    });
+
+    $container.on("click","div[fly]", function(){
+        //location.href = $(this).attr("fly");
+        window.open($(this).attr("fly"), '_blank');
+    });
+
+    $('.portfolioFilter a').click(function(){
+        $('.portfolioFilter .selected').removeClass('selected');
+        $(this).addClass('selected');
+ 
+        var selector = $(this).attr('data-filter');
+        $container.isotope({
+            filter: selector,
+            animationOptions: {
+                duration: 750,
+                easing: 'linear',
+                queue: false
+            }
+         });
+         return false;
+    }); 
+});
+
+</script>
+ 
+</body>
+</html>
