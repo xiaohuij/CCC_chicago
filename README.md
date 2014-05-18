@@ -3,13 +3,15 @@ Tweets Harvesting and Analysis System
 
 City: Chicago
 
-brief:
 
-  TweetHarvester - Tweets Harvesting java application source codes
+^^brief:
+
+  1. TweetHarvester - Tweets Harvesting java application source codes
   
-  WebContent - Mini website for visulizing Data Analysis
+  2. WebContent - Mini website for visulizing Data Analysis
 
-procedure:
+
+^^procedure:
 
   1. Tweets harvesting application
     
